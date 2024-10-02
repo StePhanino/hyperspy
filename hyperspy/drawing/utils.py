@@ -458,7 +458,7 @@ def _make_cascade_subplot(
 ):
     max_value = 0
     factors = [1] * len(spectra)
-    multiplier = np.logspace(0, np.log(padding*10*len(spectra)), len(spectra))
+    multiplier = np.logspace(0, np.log(padding*len(spectra)), len(spectra))
     for i, spectrum in enumerate(spectra):
         spectrum_yrange = np.nanmax(spectrum.data) - np.nanmin(spectrum.data)
         if spectrum_yrange > max_value:
