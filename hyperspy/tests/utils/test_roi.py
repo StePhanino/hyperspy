@@ -442,6 +442,15 @@ class TestROIs:
         r_ann = CircleROI(20, 25, 20, 15)
         assert tuple(r_ann) == (20, 25, 20, 15)
 
+    def test_polygon_vertices(self):
+        s = self.s_s
+        roi = PolygonROI()
+        s.plot()
+        roi.add_widget(s)
+        vertices = [(20, 45), (45, 45), (45, 20), (30, 30)]
+        roi.vertices = vertices
+        assert roi.vertices == vertices
+
     def test_polygon_spec(self):
         s = self.s_s
 
