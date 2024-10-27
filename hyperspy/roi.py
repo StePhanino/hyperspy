@@ -43,7 +43,7 @@ The following 2D ROIs are available:
      - (Hollow) circular ROI of a 2D signal
    * - :class:`~.api.roi.Line2DROI`
      - Line profile of a 2D signal with customisable width
-   * - :class:`~api.roi.,PolygonROI`
+   * - :class:`~.api.roi.PolygonROI`
      - Polygonal ROI with a customisable shape.
 
 """
@@ -1529,7 +1529,7 @@ class PolygonROI(BaseInteractiveROI):
         """
         Parameters
         ----------
-        vertices : list of tuples
+        vertices : list of tuple
             List containing (x, y) values of the vertices of a polygon."""
         super().__init__()
 
@@ -1947,27 +1947,26 @@ def _get_central_half_limits_of_axis(ax):
 
 
 def combine_rois(signal, rois, inverted=False, out=None, axes=None):
-    """Slice the signal according by combining a list of ROIs, by default
-        returning a sliced copy.
-        Currently only implemented for a list of `PolygonROI`s.
+    """
+    Slice the signal according by combining a list of ROIs, by default
+    returning a sliced copy. Currently only implemented for a list of
+    :class:`~.api.roi.PolygonROI`.
 
     Parameters
     ----------
-    signal : Signal
+    signal : :class:`~.api.signals.BaseSignal`
         The signal to slice with the ROI.
-    rois : list of ROIs
+    rois : list of :class:`~.api.roi.PolygonROI`
         List containing the ROIs to be sliced, making it possible
         to combine several ROI shapes.
     inverted : boolean, default = False
-        If `True`, everything outside of the ROIs supplied will be
-        retained, with the insides of the ROIs becoming NaN
-    out : Signal, default = None
-        If the `out` argument is supplied, the sliced output will be put
-        into this instead of returning a Signal. See Signal.__getitem__()
-        for more details on `out`.
+        If ``True``, everything outside of the ROIs supplied will be
+        retained, with the insides of the ROIs becoming numpy.nan.
+    out : :class:`~.api.signals.BaseSignal`, default = None
+        If the ``out`` argument is supplied, the sliced output will be put
+        into this instead of returning a :class:`~.api.signals.BaseSignal`.
     axes : list, optional
         List of the axes in the signal that the ROIs are applied to.
-    %s
     """
 
     for roi in rois:
@@ -2001,28 +2000,29 @@ def mask_from_rois(
     x_scale=None,
     y_scale=None,
 ):
-    """Function to rasterize a list of ROIs into a boolean numpy array. The
-        interior of the ROIs are by default `True`.
-        Currently only implemented for a list of `PolygonROI`s.
+    """
+    Function to rasterize a list of ROIs into a boolean numpy array. The
+    interior of the ROIs are by default ``True``. Currently only implemented
+    for a list of :class:`~.api.roi.PolygonROI`.
 
     Parameters
     ----------
-    rois : list of ROIs
+    rois : list of :class:`~.api.roi.PolygonROI`
         List containing the ROIs to be added to the mask, making it possible
         to combine several ROI shapes.
     axes_manager : :py:class:`~hyperspy.axes.AxesManager`, optional
         If supplied, the rasterization parameters not explicitly given will be
         extracted from this. The axes can be given with the `axes` attribute.
     axes : list, optional
-        List of the axes in `axes_manager` that are to be used as a basis for
+        List of the axes in ``axes_manager`` that are to be used as a basis for
         the rasterization if other parameters aren't supplied.
     xy_max : tuple, optional
         The maximum x and y values that the rasterized mask covers, given in
         the same coordinate space as the polygon vertices. The defaults are
-        the max values in the `vertices` of the supplied ROIs.
+        the max values in the ``vertices`` of the supplied ROIs.
     xy_min : tuple, optional
         The minimum x and y values that the mask covers, given in the same coordinate
-        space as the polygon vertices. The default is from `(0, 0)`.
+        space as the polygon vertices. The default is from ``(0, 0)``.
     x_scale : float, optional
         This gives the scale of the second axis of the signal. In other words,
         how many units in coordinate space that corresponds to one step between
@@ -2034,7 +2034,7 @@ def mask_from_rois(
 
     Returns
     -------
-    return_value : array
+    return_value : numpy.ndarray
         boolean numpy array of the rasterized ROIs. Depending on the limits set for
         the rasterization, parts of the ROIs may be outside of this.
     """
