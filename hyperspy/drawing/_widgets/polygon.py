@@ -22,7 +22,8 @@ from hyperspy.drawing.widget import WidgetBase
 
 
 class PolygonWidget(WidgetBase):
-    """PolygonWidget is a widget for drawing an arbitrary
+    """
+    PolygonWidget is a widget for drawing an arbitrary
     polygon, which can then be used as a region-of-interest.
     The polygon can be moved by pressing 'shift' and clicking.
     A polygon vertex can be moved by clicking its handle. If incomplete,
@@ -54,10 +55,10 @@ class PolygonWidget(WidgetBase):
                 raise ValueError("PolygonWidget needs at least two axes!")
 
         self._widget = None
-        self.position = tuple()
 
     def set_on(self, value, render_figure=True):
-        """Change the on state of the widget. If turning off, the widget will
+        """
+        Change the on state of the widget. If turning off, the widget will
         disconnect from the events. If turning on, the widget will connect to
         the default events.
         """
@@ -79,7 +80,7 @@ class PolygonWidget(WidgetBase):
         mpl_ax: matplotlib.axes._subplots.AxesSubplot
             The `matplotlib` axis that the `PolygonWidget` will attach to.
         """
-        if ax is self.ax or ax is None:
+        if ax is self.ax:
             return  # Do nothing
         # Disconnect from previous axes if set
         self.set_on(False, render_figure=False)
@@ -96,16 +97,18 @@ class PolygonWidget(WidgetBase):
 
         self._widget = PolygonSelector(
             ax,
-            onselect=self._onselect,
+            onselect=lambda *args, **kwargs: None,
             useblit=useblit,
             handle_props=handle_props,
             props=line_props,
         )
+        self._widget.connect_event("motion_notify_event", self._onmove)
 
         self.ax.figure.canvas.draw_idle()
 
     def set_vertices(self, vertices):
-        """Function for deleting the currently saved polygon and setting a new one.
+        """
+        Function for deleting the currently saved polygon and setting a new one.
 
         Parameters
         ----------
@@ -116,31 +119,42 @@ class PolygonWidget(WidgetBase):
         if self.ax is not None and self.is_on:
             if len(vertices) > 2:
                 self._widget.verts = list(vertices)
-                self._onselect(vertices)
             self.ax.figure.canvas.draw_idle()
 
     def get_vertices(self):
-        """Returns a list where each entry contains a `(x, y)` tuple
+        """
+        Returns a list where each entry contains a `(x, y)` tuple
         of the vertices of the polygon. The polygon is not closed.
-        Returns an empty list if no polygon is set."""
+        Returns an empty list if no polygon is set.
+        """
 
         if self._widget is None:
             return []
 
         return self._widget.verts.copy()
 
-    def _onselect(self, vertices):
-        self.events.changed.trigger(self)
+    def _onmove(self, event):
+        # Filter event, see matplotlib event API for more details
+        if not self._widget.ignore(event) and event.button is not None:
+            self.events.changed.trigger(self)
 
-        xmax = max(x for x, y in vertices)
-        ymax = max(y for x, y in vertices)
-        xmin = min(x for x, y in vertices)
-        ymin = min(y for x, y in vertices)
+    @property
+    def position(self):
+        if self._widget is not None and self._widget.verts:
+            vertices = self._widget.verts
+            xmax = max(x for x, y in vertices)
+            ymax = max(y for x, y in vertices)
+            xmin = min(x for x, y in vertices)
+            ymin = min(y for x, y in vertices)
+            position = ((xmax + xmin) / 2, (ymax + ymin) / 2)
+        else:
+            position = tuple()
 
-        self.position = ((xmax + xmin) / 2, (ymax + ymin) / 2)
+        return position
 
     def get_centre(self):
-        """Returns the xy coordinates of the patch centre. In this implementation, the
+        """
+        Returns the xy coordinates of the patch centre. In this implementation, the
         centre of the widget is the centre of the polygon's bounding box.
         """
         return self.position

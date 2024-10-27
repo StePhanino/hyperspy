@@ -292,7 +292,12 @@ class TestPlotPolygonWidget:
         im.plot()
         polygon.set_mpl_ax(im._plot.signal_plot.ax)
 
-        assert polygon.ax == im._plot.signal_plot.ax
+        # check that adding to a matplotlib axis
+        # that is already set to the widget works fine
+        assert polygon.ax is im._plot.signal_plot.ax
+        polygon.set_mpl_ax(im._plot.signal_plot.ax)
+        assert polygon.ax is im._plot.signal_plot.ax
+
         assert polygon._is_on
 
         polygon.set_on(False, render_figure=True)

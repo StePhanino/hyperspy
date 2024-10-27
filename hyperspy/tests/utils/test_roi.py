@@ -524,7 +524,7 @@ class TestROIs:
         r_empty = PolygonROI()
         r_empty.vertices = []
         s_empty = r_empty(s)
-        assert np.all(np.isnan(s_empty))
+        np.testing.assert_allclose(s_empty, np.nan)
         assert s_empty.axes_manager.navigation_shape == s.axes_manager.navigation_shape
 
         s_empty_inv = r_empty(s, inverted=True)
