@@ -1655,6 +1655,16 @@ class PolygonROI(BaseInteractiveROI):
         if not inverted:
             mask = np.logical_not(mask)  # Masked out areas should be True
 
+            
+        nav_axes = [ax.navigate for ax in axes]
+        nav_dim = signal.axes_manager.navigation_dimension
+
+        # If there is one signal and one navigation dimension,
+        # the order of the axes should be swapped to conform to
+        # other ROI behavior.
+        if True in nav_axes and False in nav_axes:
+            natax = natax[::-1]
+
         tiles = []
         shape = []
         chunks = []
@@ -1674,8 +1684,6 @@ class PolygonROI(BaseInteractiveROI):
                 shape.append(1)
         mask = mask.reshape(shape)
 
-        nav_axes = [ax.navigate for ax in axes]
-        nav_dim = signal.axes_manager.navigation_dimension
         if True in nav_axes:
             if False in nav_axes:
                 slicer = signal.inav[slices[:nav_dim]].isig.__getitem__

@@ -541,6 +541,13 @@ class TestROIs:
         )
         np.testing.assert_array_equal(np.isnan(mask), desired_mask)
 
+        # Test applying ROI to mixed signal/navigation axes
+        s_navsig = self.s_s.inav[0]
+        r_navsig = PolygonROI([(0, 0), ( 3, 150), (3, 0)])
+        sr_navsig = r_navsig(s_navsig)
+        assert len(sr_navsig.axes_manager.signal_axes) == 1
+        assert len(sr_navsig.axes_manager.navigation_axes) == 1
+
         # Test square ROI. Useful for testing edge cases.
         r_square = PolygonROI([(10, 10), (20, 10), (20, 40), (10, 40)])
         sr_square = r_square(s, inverted=True)
@@ -548,6 +555,11 @@ class TestROIs:
         desired_mask = np.ones_like(mask, dtype=bool)
         desired_mask[2:9, 2:5] = False
         np.testing.assert_array_equal(~np.isnan(mask), desired_mask)
+        
+        # Test using ``out`` parameter
+        out = Signal1D(np.ones_like(sr_square))
+        r_square(s, inverted=True, out=out)
+        assert np.array_equal(out.data, sr_square.data, equal_nan=True)
 
         # Test empty ROI
         r_empty = PolygonROI()
