@@ -455,6 +455,15 @@ class TestROIs:
         rs_inferred = roi(s)
         assert np.array_equal(rs_inferred.data, rs_navigation.data, equal_nan =True)
 
+        # Test set vertices from widget
+        desired_vertices = [(10, 20), (30, 40), (50, 60)]
+        widget = next(iter(roi.widgets))
+        widget.set_vertices(desired_vertices)
+        assert roi.vertices != widget.get_vertices()
+        roi._set_from_widget(widget)
+        assert roi.vertices == widget.get_vertices()
+
+
     def test_polygon_invalid(self):
         s = self.s_s
         roi = PolygonROI()
@@ -1041,6 +1050,7 @@ class TestROIs:
             SpanROI,
             Line2DROI,
             CircleROI,
+            PolygonROI
         ]:
             r = roi()
             r._set_default_values(self.s_s)
@@ -1183,20 +1193,29 @@ class TestROIs:
         )
 
         rois = [r1, r2, r3, r4, r5, r6, r7]
-        other_polygons = [
-            polygon._vertices for polygon in rois[1:] if polygon.is_valid()
+        polygons_vertices = [
+            polygon._vertices for polygon in rois if polygon.is_valid()
         ]
 
         combined_slice = combine_rois(s, rois=rois)
+        empty = PolygonROI()
 
         # Check same result as method in `PolygonROI`
         np.testing.assert_array_equal(
-            combined_slice, rois[0]._combine(s, additional_polygons=other_polygons)
+            combined_slice, empty._combine(s, additional_polygons=polygons_vertices)
         )
 
         combined_mask = mask_from_rois(rois=rois, axes_manager=s.axes_manager)
-        desired_mask = rois[0]._boolean_mask(
-            axes_manager=s.axes_manager, additional_polygons=other_polygons
+        desired_mask = empty._boolean_mask(
+            axes_manager=s.axes_manager, additional_polygons=polygons_vertices
+        )
+
+        np.testing.assert_array_equal(combined_mask, desired_mask)
+
+        # Test without an ``axes_manager``
+        combined_mask = mask_from_rois(rois=rois)
+        desired_mask = empty._boolean_mask(
+            additional_polygons=polygons_vertices
         )
 
         np.testing.assert_array_equal(combined_mask, desired_mask)

@@ -1661,7 +1661,7 @@ class PolygonROI(BaseInteractiveROI):
 
         # If there is one signal and one navigation dimension,
         # the order of the axes should be swapped to conform to
-        # other ROI behavior.
+        # other ROI behavio
         if True in nav_axes and False in nav_axes:
             natax = natax[::-1]
 

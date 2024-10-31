@@ -282,6 +282,29 @@ class TestPlotPolygonWidget:
         np.testing.assert_allclose(polygon.get_vertices(), verts)
         assert polygon.get_centre() == (49.0, 49.5)
 
+    def test_unattached(self):
+        polygon = widgets.PolygonWidget(None)
+        assert polygon.get_vertices() == []
+        assert polygon.get_centre() == tuple()
+
+    def test_mock_event(self):
+        polygon = self.polygon
+        im = self.im
+        im.plot()
+        polygon.set_mpl_ax(im._plot.signal_plot.ax)
+
+        figure = im._plot.signal_plot.ax.figure
+        event = mock_event(figure, figure.canvas)
+        # Place event within axes
+        event.x, event.y = im._plot.signal_plot.ax.bbox.extents[:2] + 1
+
+        polygon._onmove(event)
+
+        event.button= "x"
+        polygon._onmove(event)
+
+
+
     def test_set_on(self):
         polygon = self.polygon
         im = self.im
