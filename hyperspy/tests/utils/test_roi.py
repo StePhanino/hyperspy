@@ -442,14 +442,34 @@ class TestROIs:
         r_ann = CircleROI(20, 25, 20, 15)
         assert tuple(r_ann) == (20, 25, 20, 15)
 
-    def test_polygon_vertices(self):
+    def test_polygon_with_widget(self):
         s = self.s_s
         roi = PolygonROI()
         s.plot()
-        roi.add_widget(s)
-        vertices = [(20, 45), (45, 45), (45, 20), (30, 30)]
+        roi.add_widget(s, axes=s.axes_manager.navigation_axes)
+        vertices = [(2, 200), (250, 200), (250, 2), (100, 100)]
         roi.vertices = vertices
         assert roi.vertices == vertices
+        # Test correct inferred axes
+        rs_navigation = roi(s, axes=s.axes_manager.navigation_axes)
+        rs_inferred = roi(s)
+        assert np.array_equal(rs_inferred.data, rs_navigation.data, equal_nan =True)
+
+    def test_polygon_invalid(self):
+        s = self.s_s
+        roi = PolygonROI()
+        with pytest.raises(ValueError):
+            roi(s)
+
+    def test_polygon_nonuniform(self):
+        s = self.s_s.copy()
+        # converting to non-uniform axis
+        s.axes_manager.navigation_axes[0].convert_to_functional_data_axis(
+            expression="1/x",
+        )
+        roi = PolygonROI([(1, 2), (3, 4), (5, 6)])
+        with pytest.raises(NotImplementedError):
+            roi(s)
 
     def test_polygon_spec(self):
         s = self.s_s
