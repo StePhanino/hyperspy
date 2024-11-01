@@ -512,9 +512,7 @@ class TestROIs:
             O O O O O O O O X
             X X X X X X O O X
             X X X X X X X O X
-        """.strip().replace(
-            " ", ""
-        )
+        """.strip().replace(" ", "")
         desired_mask = [
             [c == "O" for c in line.strip()] for line in desired_mask.splitlines()
         ]
