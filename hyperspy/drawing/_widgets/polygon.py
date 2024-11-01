@@ -55,6 +55,13 @@ class PolygonWidget(WidgetBase):
                 raise ValueError("PolygonWidget needs at least two axes!")
 
         self._widget = None
+        self._finished_building = False
+        self._cached_vertices = []
+
+    def _complete_building(self, verts):
+        self._finished_building = True
+        self._cached_vertices = list(verts)
+        self.events.changed.trigger(self)
 
     def set_on(self, value, render_figure=True):
         """
@@ -97,7 +104,7 @@ class PolygonWidget(WidgetBase):
 
         self._widget = PolygonSelector(
             ax,
-            onselect=lambda *args, **kwargs: None,
+            onselect=self._complete_building,
             useblit=useblit,
             handle_props=handle_props,
             props=line_props,
@@ -118,7 +125,10 @@ class PolygonWidget(WidgetBase):
 
         if self.ax is not None and self.is_on:
             if len(vertices) > 2:
-                self._widget.verts = list(vertices)
+                vertices = [(x, y) for x, y in vertices]
+                self._widget.verts = vertices
+                self._finished_building = True
+                self._cached_vertices = vertices.copy()
             self.ax.figure.canvas.draw_idle()
 
     def get_vertices(self):
@@ -158,3 +168,13 @@ class PolygonWidget(WidgetBase):
         centre of the widget is the centre of the polygon's bounding box.
         """
         return self.position
+
+    def finished_building(self):
+        """
+        Function for checking if polygon is finished being built. Useful for finding
+        out if the vertices are complete.
+        """
+
+        if self._widget is None:
+            return False
+        return self._finished_building and self._cached_vertices == self._widget.verts

@@ -270,17 +270,28 @@ class TestPlotPolygonWidget:
         # Defaults
         assert polygon.get_vertices() == []
         assert polygon.get_centre() == tuple()
+        assert not polygon._finished_building
+        assert not polygon.finished_building()
 
         verts = [(31, 41), (15, 92), (65, 35)]
         polygon.set_vertices(verts)
         np.testing.assert_allclose(polygon.get_vertices(), verts)
+        assert polygon._finished_building
+        assert polygon.finished_building()
         assert polygon.get_centre() == (40.0, 63.5)
 
         verts = np.arange(100).reshape((50, 2))
         verts[::2, 1] = 0
         polygon.set_vertices(verts)
-        np.testing.assert_allclose(polygon.get_vertices(), verts)
+        np.testing.assert_allclose(polygon.get_vertices(), list(verts))
+        assert polygon._finished_building
+        assert polygon.finished_building()
         assert polygon.get_centre() == (49.0, 49.5)
+
+        verts = [(31, 41), (15, 92), (65, 35)]
+        polygon._complete_building(verts)
+        np.testing.assert_allclose(polygon._cached_vertices, verts)
+        assert polygon._finished_building
 
     def test_unattached(self):
         polygon = widgets.PolygonWidget(None)
@@ -297,7 +308,6 @@ class TestPlotPolygonWidget:
         event = mock_event(figure, figure.canvas)
         # Place event within axes
         event.x, event.y = im._plot.signal_plot.ax.bbox.extents[:2] + 1
-
         polygon._onmove(event)
 
         event.button = "x"

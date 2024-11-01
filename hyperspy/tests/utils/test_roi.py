@@ -463,6 +463,14 @@ class TestROIs:
         roi._set_from_widget(widget)
         assert roi.vertices == widget.get_vertices()
 
+        # Test widget with invalid vertices
+        widget._widget.verts = [(20, 20), (10, 10)]
+        roi._set_from_widget(widget)  # Should not do anything
+        assert roi.vertices != widget.get_vertices()
+
+        widget._widget = None
+        assert not widget.finished_building()
+
     def test_polygon_invalid(self):
         s = self.s_s
         roi = PolygonROI()

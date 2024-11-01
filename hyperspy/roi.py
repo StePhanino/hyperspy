@@ -1942,10 +1942,17 @@ class PolygonROI(BaseInteractiveROI):
         self.vertices = []
 
     def _set_from_widget(self, widget):
-        """Sets the internal representation of the ROI from the passed widget,
+        """
+        Sets the internal representation of the ROI from the passed widget,
         without doing anything to events.
         """
-        self.vertices = widget.get_vertices()
+        if not widget.finished_building():
+            return
+
+        try:
+            self.vertices = widget.get_vertices()
+        except ValueError:
+            pass  # Do nothing if `widget` does not have valid vertices
 
 
 def _get_central_half_limits_of_axis(ax):
