@@ -25,6 +25,8 @@ class PolygonWidget(WidgetBase):
     """
     PolygonWidget is a widget for drawing an arbitrary
     polygon, which can then be used as a region-of-interest.
+    To construct the polygon, click at the positions to put the
+    vertices. Click the first vertex again to complete construction.
     The polygon can be moved by pressing 'shift' and clicking.
     A polygon vertex can be moved by clicking its handle. If incomplete,
     it is also necessary to press 'ctrl'.
