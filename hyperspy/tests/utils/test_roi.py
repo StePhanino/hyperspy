@@ -466,7 +466,7 @@ class TestROIs:
     def test_polygon_invalid(self):
         s = self.s_s
         roi = PolygonROI()
-        roi._vertices = [(0,1,2,3,4,5)]
+        roi._vertices = [(0, 1, 2, 3, 4, 5)]
         with pytest.raises(ValueError):
             roi(s)
 
@@ -512,7 +512,9 @@ class TestROIs:
             O O O O O O O O X
             X X X X X X O O X
             X X X X X X X O X
-        """.strip().replace(" ", "")
+        """.strip().replace(
+            " ", ""
+        )
         desired_mask = [
             [c == "O" for c in line.strip()] for line in desired_mask.splitlines()
         ]
@@ -552,7 +554,7 @@ class TestROIs:
 
         # Test applying ROI to mixed signal/navigation axes
         s_navsig = self.s_s.inav[0]
-        r_navsig = PolygonROI([(0, 0), ( 3, 150), (3, 0)])
+        r_navsig = PolygonROI([(0, 0), (3, 150), (3, 0)])
         sr_navsig = r_navsig(s_navsig)
         assert len(sr_navsig.axes_manager.signal_axes) == 1
         assert len(sr_navsig.axes_manager.navigation_axes) == 1
@@ -564,7 +566,7 @@ class TestROIs:
         desired_mask = np.ones_like(mask, dtype=bool)
         desired_mask[2:9, 2:5] = False
         np.testing.assert_array_equal(~np.isnan(mask), desired_mask)
-        
+
         # Test using ``out`` parameter
         out = Signal1D(np.ones_like(sr_square))
         r_square(s, inverted=True, out=out)
@@ -1050,7 +1052,7 @@ class TestROIs:
             SpanROI,
             Line2DROI,
             CircleROI,
-            PolygonROI
+            PolygonROI,
         ]:
             r = roi()
             r._set_default_values(self.s_s)
@@ -1214,9 +1216,7 @@ class TestROIs:
 
         # Test without an ``axes_manager``
         combined_mask = mask_from_rois(rois=rois)
-        desired_mask = empty._boolean_mask(
-            additional_polygons=polygons_vertices
-        )
+        desired_mask = empty._boolean_mask(additional_polygons=polygons_vertices)
 
         np.testing.assert_array_equal(combined_mask, desired_mask)
 

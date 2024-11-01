@@ -1655,7 +1655,6 @@ class PolygonROI(BaseInteractiveROI):
         if not inverted:
             mask = np.logical_not(mask)  # Masked out areas should be True
 
-            
         nav_axes = [ax.navigate for ax in axes]
         nav_dim = signal.axes_manager.navigation_dimension
 

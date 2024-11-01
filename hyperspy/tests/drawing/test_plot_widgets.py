@@ -300,10 +300,8 @@ class TestPlotPolygonWidget:
 
         polygon._onmove(event)
 
-        event.button= "x"
+        event.button = "x"
         polygon._onmove(event)
-
-
 
     def test_set_on(self):
         polygon = self.polygon
