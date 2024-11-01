@@ -1951,7 +1951,7 @@ class PolygonROI(BaseInteractiveROI):
 
         try:
             self.vertices = widget.get_vertices()
-        except ValueError:
+        except ValueError:  # pragma: no cover
             pass  # Do nothing if `widget` does not have valid vertices
 
 
@@ -1984,7 +1984,7 @@ def combine_rois(signal, rois, inverted=False, out=None, axes=None):
     """
 
     for roi in rois:
-        if not isinstance(roi, PolygonROI):
+        if not isinstance(roi, PolygonROI):  # pragma: no cover
             raise NotImplementedError(
                 "`combine_rois` is currently only implemented for `PolygonROI`."
             )
@@ -2054,7 +2054,7 @@ def mask_from_rois(
     """
 
     for roi in rois:
-        if not isinstance(roi, PolygonROI):
+        if not isinstance(roi, PolygonROI):  # pragma: no cover
             raise NotImplementedError(
                 "`mask_from_rois` is currently only implemented for `PolygonROI`."
             )
