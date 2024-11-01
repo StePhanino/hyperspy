@@ -1577,7 +1577,7 @@ def plot_spectra(
             handles = line.legend_handles
         else:
             handles = line.legendHandles
-        ax_.legend(reversed(handles), reversed(labels), loc=legend_loc_)
+        ax_.legend(handles[::-1], labels[::-1], loc=legend_loc_)
 
     # Before v1.3 default would read the value from prefereces.
     if style == "default":
