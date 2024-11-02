@@ -1,0 +1,1 @@
+Use custom version scheme in ``setuptools_scm`` to fix the version in the development version of the documentation for next major and next minor release branches. Previously, only the patch segment was incremented.
