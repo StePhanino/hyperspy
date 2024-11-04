@@ -1,1 +1,1 @@
-Fix bug in :func:`~.api.plot.plot_spectra` when reserving legend handles since matplotlib expect a list and not an iterator.
+Fix bug in :func:`~.api.plot.plot_spectra` when reversing legend handles since matplotlib expects a list and not an iterator.
