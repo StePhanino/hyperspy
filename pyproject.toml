@@ -170,6 +170,7 @@ omit = [
     "hyperspy/conftest.py",
     "hyperspy/tests/*",
     "prepare_release.py",
+    "setup.py",
 ]
 source = ["hyperspy"]
 

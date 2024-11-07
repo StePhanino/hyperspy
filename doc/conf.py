@@ -179,6 +179,7 @@ favicons = [
 # in as it is done here to make sure that they match!
 version_match = "dev" if "dev" in release else ".".join(release.split(".")[:2] + ["x"])
 
+print("version", release)
 print("version_match:", version_match)
 
 html_theme_options = {
