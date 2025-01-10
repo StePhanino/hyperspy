@@ -512,10 +512,6 @@ def test_plot_images_single_image_stack():
     return plt.gcf()
 
 
-@pytest.mark.skipif(
-    Version(matplotlib.__version__) < Version("3.6.0"),
-    reason="This test requires matplotlib >= 3.6.0",
-)
 def test_plot_images_multi_signal_w_axes_replot():
     imdata = np.random.rand(6, 5, 5)
     imgs = hs.signals.Signal2D(imdata)
@@ -687,11 +683,7 @@ def test_plot_autoscale(autoscale):
     s.axes_manager.events.indices_changed.trigger(s.axes_manager)
     # Because we are hacking the vmin, vmax with matplotlib, we need to update
     # colorbar too
-    if Version(matplotlib.__version__) <= Version("3.6.0"):
-        # `draw_all` is deprecated in matplotlib 3.6.0
-        imf._colorbar.draw_all()
-    else:
-        imf.figure.draw_without_rendering()
+    imf.figure.draw_without_rendering()
 
     return s._plot.signal_plot.figure
 
@@ -823,6 +815,15 @@ def test_plot_images_overlay_vmin_warning(caplog):
         hs.plot.plot_images([s, s], overlay=True, vmin=0)
 
     assert "`vmin` is ignored when overlaying images." in caplog.text
+
+
+def test_plot_images_overlay_signals():
+    s = hs.signals.Signal2D(np.arange(10 * 10).reshape(10, 10))
+
+    hs.plot.plot_images(s, overlay=True)
+
+    s = hs.stack([s, -s])
+    hs.plot.plot_images(s, overlay=True)
 
 
 def test_plot_scalebar_error():
@@ -1021,3 +1022,38 @@ def test_plot_images_axes_ticks(axes_decor):
     assert np.allclose(plot_ax.get_yticks(), plot_images_ax.get_yticks())
     assert np.allclose(plot_ax.get_xlim(), plot_images_ax.get_xlim())
     assert np.allclose(plot_ax.get_ylim(), plot_images_ax.get_ylim())
+
+
+@pytest.mark.mpl_image_compare(
+    baseline_dir=baseline_dir, tolerance=default_tol, style=style_pytest_mpl
+)
+def test_plot_image_ax():
+    s = hs.signals.Signal2D(np.arange(100).reshape(10, 10))
+    s2 = -s
+
+    # check that passing a non-iterable is working
+    fig, ax = plt.subplots()
+    hs.plot.plot_images(s, ax=ax, axes_decor="off")
+
+    s_ = hs.stack([s, s2])
+    fig, ax = plt.subplots()
+    with pytest.raises(ValueError):
+        # length of ax is not compatible
+        hs.plot.plot_images(s_, ax=ax, axes_decor="off")
+
+    fig, ax = plt.subplots(ncols=2, nrows=1)
+    # axes_decor="off" to avoid ticks warning
+    hs.plot.plot_images(s_, ax=ax, axes_decor="off")
+
+    with pytest.raises(ValueError):
+        # ax can't be iterable with overlay=True
+        hs.plot.plot_images([s, s2], ax=ax, overlay=True)
+
+    fig, ax = plt.subplots(ncols=1, nrows=1)
+    hs.plot.plot_images([s, s2], ax=ax, overlay=True)
+
+    fig, ax = plt.subplots(ncols=3, nrows=1)
+    # axes_decor="off" to avoid ticks warning
+    hs.plot.plot_images([s, s2], ax=ax[1:], axes_decor="off")
+
+    return fig

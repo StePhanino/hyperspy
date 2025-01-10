@@ -179,6 +179,7 @@ favicons = [
 # in as it is done here to make sure that they match!
 version_match = "dev" if "dev" in release else ".".join(release.split(".")[:2] + ["x"])
 
+print("version", release)
 print("version_match:", version_match)
 
 html_theme_options = {
@@ -442,9 +443,8 @@ graphviz_output_format = "svg"
 copybutton_prompt_text = r">>> |\.\.\. "
 copybutton_prompt_is_regexp = True
 
+tls_verify = True
+
 
 def setup(app):
     app.add_css_file("custom-styles.css")
-
-
-tls_verify = False
